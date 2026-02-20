@@ -323,7 +323,7 @@ const CodeEditor = ({ setUsers, setIsAdmin, setSocketRef, setJoinRequests }) => 
     };
   }, [roomId, username, setUsers, navigate]);
 
-  if (!location.state) {
+  if (!username) {
     return <Navigate to="/" state={{ roomId }} />;
   }
  
