@@ -1,36 +1,33 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react';
 
-const Select = ({ options, value, onChange, placeholder = 'Select...', className = '' }) => {
-    const [isOpen, setIsOpen] = useState(false)
-    const dropdownRef = useRef(null)
+const Select = ({ options, value, onChange, placeholder = 'Select...' }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef(null);
 
-    // Close dropdown when clicking outside
+    const selectedOption = options.find((opt) => opt.value === value);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false)
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setIsOpen(false);
             }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
-
-    const handleSelect = (optionValue) => {
-        onChange(optionValue)
-        setIsOpen(false)
-    }
-
-    const selectedOption = options.find((opt) => opt.value === value)
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
-        <div className={`relative ${className}`} ref={dropdownRef}>
+        <div className="relative" ref={containerRef}>
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 rounded-md px-3 py-1.5 flex items-center justify-between gap-2 transition-colors min-w-[140px] focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="w-full bg-zinc-800 text-white border border-zinc-700 rounded-md py-1.5 px-3 text-sm text-left flex items-center justify-between hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
             >
-                <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+                <span className="truncate">
+                    {selectedOption ? selectedOption.label : placeholder}
+                </span>
                 <svg
-                    className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -40,30 +37,26 @@ const Select = ({ options, value, onChange, placeholder = 'Select...', className
             </button>
 
             {isOpen && (
-                <div className="absolute top-full left-0 mt-1 w-full min-w-[140px] max-h-64 overflow-y-auto bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 py-1">
-                    {options.length === 0 ? (
-                        <div className="px-4 py-2 text-zinc-500 text-sm">No options</div>
-                    ) : (
-                        options.map((option) => (
-                            <button
-                                key={option.value}
-                                onClick={() => handleSelect(option.value)}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-zinc-700 transition-colors flex items-center justify-between ${value === option.value ? 'text-indigo-400 bg-zinc-700/50 font-medium' : 'text-zinc-300'
-                                    }`}
-                            >
-                                <span className="truncate">{option.label}</span>
-                                {value === option.value && (
-                                    <svg className="w-4 h-4 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                )}
-                            </button>
-                        ))
-                    )}
+                <div className="absolute z-50 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg max-h-60 overflow-y-auto custom-scrollbar">
+                    {options.map((option) => (
+                        <div
+                            key={option.value}
+                            onClick={() => {
+                                onChange(option.value);
+                                setIsOpen(false);
+                            }}
+                            className={`px-3 py-2 text-sm cursor-pointer transition-colors ${value === option.value
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'
+                                }`}
+                        >
+                            {option.label}
+                        </div>
+                    ))}
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default Select
+export default Select;

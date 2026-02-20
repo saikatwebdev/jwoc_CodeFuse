@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import editorimg from "../assets/editor.svg";
 import User from "../components/User";
 import CodeEditor from "../components/Editor";
@@ -19,6 +19,13 @@ const EditorPage = () => {
 
   const { roomId } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleCopyRoomId = async () => {
     await navigator.clipboard.writeText(roomId);
@@ -42,6 +49,14 @@ const EditorPage = () => {
   };
 
   const handleLeave = () => {
+    navigate("/");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    toast.success("Logged out");
     navigate("/");
   };
 
@@ -139,6 +154,29 @@ const EditorPage = () => {
         </div>
 
         <div className="mt-auto space-y-3">
+          {!user && (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="w-full flex items-center justify-center gap-2 border-2 border-zinc-700 hover:border-indigo-500 text-white py-3 rounded-xl font-semibold transition-all duration-200 hover:bg-zinc-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
+              </svg>
+              Sign In
+            </button>
+          )}
+
           <button
             onClick={handleShareLink}
             className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-indigo-500/20"
@@ -216,27 +254,6 @@ const EditorPage = () => {
               />
             </svg>
             Leave Room
-          </button>
-
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 border-2 border-zinc-700 hover:border-indigo-500 text-white py-3 rounded-xl font-semibold transition-all duration-200 hover:bg-zinc-800"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-              />
-            </svg>
-            Sign In
           </button>
         </div>
       </div>

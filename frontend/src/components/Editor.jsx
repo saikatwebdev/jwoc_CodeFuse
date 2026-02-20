@@ -1,12 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import { initSocket } from "../socket";
-import {
-  useNavigate,
-  useLocation,
-  useParams,
-  Navigate,
-} from "react-router-dom";
+import { useLocation, useParams, Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Select from "./Select";
@@ -23,7 +18,6 @@ const CodeEditor = ({ setUsers, setIsAdmin, setSocketRef, setJoinRequests }) => 
   const monacoRef = useRef(null);
   const { roomId } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Refs for mute/state management to prevent loops
   const isRemoteUpdate = useRef(false);
@@ -352,7 +346,7 @@ const CodeEditor = ({ setUsers, setIsAdmin, setSocketRef, setJoinRequests }) => 
     });
   };
 
-  const handleEditorChange = (value, event) => {
+  const handleEditorChange = (value) => {
     // If update comes from remote, verify it's not a loop
     if (isRemoteUpdate.current) {
       isRemoteUpdate.current = false;

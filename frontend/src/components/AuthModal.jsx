@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AuthModal = ({ isOpen, onClose }) => {
     const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
@@ -10,16 +12,46 @@ const AuthModal = ({ isOpen, onClose }) => {
     const [username, setUsername] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitted:', { activeTab, email, password, username });
-        // TODO: Implement backend integration
-        onClose();
+
+        if (activeTab === 'signup' && password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        try {
+            const endpoint = activeTab === 'login'
+                ? `${import.meta.env.VITE_BACKEND_URL}/api/users/login`
+                : `${import.meta.env.VITE_BACKEND_URL}/api/users/register`;
+
+            const payload = activeTab === 'login'
+                ? { email, password }
+                : { username, email, password };
+
+            console.log(payload);
+            const response = await axios.post(endpoint, payload);
+            
+
+            if (response.data.success) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                toast.success(`Welcome, ${response.data.user.username}!`);
+                onClose();
+                window.location.reload(); // Simple way to update UI state
+            }
+        } catch (error) {
+            console.error("Auth error:", error);
+            toast.error(error.response?.data?.message || "Authentication failed");
+        }
     };
 
     const switchTab = (tab) => {
         setActiveTab(tab);
-        // Reset fields usually, keeping simple for now
+        setEmail('');
+        setPassword('');
+        setUsername('');
+        setConfirmPassword('');
     };
 
     return (
