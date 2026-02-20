@@ -41,7 +41,7 @@ const CodeEditor = ({ setUsers, setIsAdmin, setSocketRef, setJoinRequests }) => 
   const [remoteCursors, setRemoteCursors] = useState({});
   const [isApproved, setIsApproved] = useState(false);
 
-  const username = location.state?.username;
+  const username = location.state?.username || localStorage.getItem("username")
 
   // Language mapping for Monaco
   const languageOptions = [
